@@ -1,0 +1,258 @@
+@media screen and (min-width: 1280px) {
+    .freesky-drive-mode .only-mobile {
+        display:none !important;
+    }
+}
+@media screen and (max-width: 1279px) {
+    .freesky-drive-mode .only-desktop {
+        display:none !important;
+    }
+}
+.freesky-drive-mode {
+    --mobile-po-offset:100px;
+}
+.freesky-drive-mode .safe-container {
+    padding: 0;
+}
+
+.freesky-drive-mode .drive-mode {
+    position: relative;
+}
+
+.freesky-drive-mode .heading-area {
+    margin-top: 50px;
+}
+
+.freesky-drive-mode .heading-area .section-title {
+    margin-bottom: 10px;
+    font-size: var(--section-title, 34px);
+    color: #fff;
+    pointer-events: all;
+    font-weight: 700;
+    line-height: 1.2;
+}
+.freesky-drive-mode .heading-area .section-info {
+    color: #fff;
+    pointer-events: all;
+    font-size: 16px;
+}
+
+.freesky-drive-mode .main-area .block-info {
+    position: absolute;
+    bottom: calc(40px + var(--mobile-po-offset));
+    width: 100%;
+    left: 0;
+    color: #fff;
+    padding: 0 20px;
+    line-height: 1.2;
+    display: flex;
+    flex-direction: column;
+}
+
+.freesky-drive-mode .main-area .icon-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 5px;
+}
+.freesky-drive-mode .main-area .icon-desc {
+    font-size: 14px;
+    color: #eee;
+}
+
+.freesky-drive-mode .main-area .custom-pagination {
+    position: absolute;
+    bottom: calc(10px + var(--mobile-po-offset));
+    left: 0;
+    width: 100%;
+    padding: 0 20px;
+    z-index: 1;
+}
+.freesky-drive-mode .custom-pagination .swiper-pagination {
+    position:static;
+    display: flex;
+    gap: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    height: 30px;
+}
+
+.freesky-drive-mode .custom-pagination .swiper-pagination-bullet {
+    width: 40px;
+    border-radius: 3px;
+    height: 3px;
+    transition: all .3s linear;
+    background-color: #aaa;
+    margin:0;
+}
+
+.freesky-drive-mode .custom-pagination .swiper-pagination-bullet.swiper-pagination-bullet-active {
+    background-color: #94f250;
+}
+
+
+
+.freesky-drive-mode .thumbnail-area {
+    padding: 10px 20px;
+    position: absolute;
+    width: 100%;
+    bottom: 0;
+    left: 0;
+    height: 100%;
+    z-index: 1;
+}
+
+.freesky-drive-mode  .thumbnail-container {
+    position: absolute;
+    bottom: 10px;
+    max-width: 100%;
+    left: 0;
+    padding: 20px !important;
+}
+
+.freesky-drive-mode .thumbnail-area .icon-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+}
+
+.freesky-drive-mode .thumbnail-area .icon-img {
+    max-height:50px;
+}
+.freesky-drive-mode .thumbnail-area .icon-normal {
+    display:block;
+}
+.freesky-drive-mode .thumbnail-area .icon-active {
+    display:none;
+}
+.freesky-drive-mode .thumbnail-area .swiper-slide-thumb-active .icon-normal {
+    display:none;
+}
+.freesky-drive-mode .thumbnail-area .swiper-slide-thumb-active .icon-active {
+    display:block;
+}
+
+.freesky-drive-mode .thumbnail-area .icon-title {
+    font-size: 12px;
+    font-weight: bold;
+    color:#888;
+    margin-top:5px;
+}
+.freesky-drive-mode .thumbnail-area .swiper-slide-thumb-active .icon-title {
+    color:#fff;
+}
+
+
+
+@media screen and (min-width: 1280px) {
+    .freesky-drive-mode .safe-container {
+        padding: 0;
+        position: relative;
+    }
+
+
+    .freesky-drive-mode .thumbnail-area {
+        padding: 0 50px 0 0;
+        position: absolute;
+        width: 100%;
+        max-width: 40%;
+        top: 0;
+        left: auto;
+        right: 0;
+        height: 100%;
+        z-index: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-evenly;
+    }
+
+    .freesky-drive-mode .heading-area {
+        margin-top:0;
+    }
+    
+    .freesky-drive-mode .heading-area .section-title {
+        margin-bottom: 20px;
+    }
+    .freesky-drive-mode .heading-area .section-info {
+        font-size: 20px;
+    }
+    
+    .freesky-drive-mode .thumbnail-area .thumbnail-container {
+        position: static;
+        padding: 0 !important;
+        min-height: 235px;
+    }
+    .freesky-drive-mode .thumbnail-inner {
+        max-width: 600px;
+    }
+    .freesky-drive-mode .thumbnail-area .icon-img {
+        max-height: 90px;
+    }
+    .freesky-drive-mode .thumbnail-area .icon-title {
+        font-size: 16px;
+        font-weight: 700;
+        color: #fff;
+        margin-top: 10px;
+    }
+    .freesky-drive-mode .thumbnail-area .swiper-slide-thumb-active .icon-title {
+        color: #fff;
+    }
+
+    .freesky-drive-mode .thumbnail-area .progress-line {
+        display: block;
+        width: 100%;
+        width: 90%;
+        border-radius: 5px;
+        position: relative;
+        overflow: hidden;
+        margin: 0;
+        height: 0;
+        transition: none;
+    }
+    .freesky-drive-mode .thumbnail-area .swiper-slide-thumb-active .progress-line {
+        margin: 10px 0;
+        height: 5px;
+        transition: all .4s ease-out;
+    }
+    .freesky-drive-mode .thumbnail-area .progress-line:after {
+        content: "";
+        display: block;
+        height: 5px;
+        width: 1%;
+        background-color: #94f250;
+        border-radius: 5px;
+    }
+    .freesky-drive-mode .thumbnail-area .swiper-slide-thumb-active .progress-line:after {
+        width: 100%;
+        transition: width var(--autoplay_speed) linear;
+    }
+
+    .freesky-drive-mode .thumbnail-area .icon-desc {
+        font-size: 14px;
+        color: #fff;
+        height: 0;
+        overflow: hidden;
+    }
+    .freesky-drive-mode .thumbnail-area .swiper-slide-thumb-active .icon-desc {
+        height: auto;
+        transition: all .4s ease-out;
+    }
+
+    .freesky-drive-mode .thumbnail-area .swiper-wrapper {
+        align-items: center;
+    }
+}
+
+@media screen and (min-width: 1280px) {
+    .freesky-drive-mode {
+        --pc-section-title:52px;
+        --section-title: calc(var(--pc-section-title) * 0.8);
+    }
+}
+@media screen and (min-width: 1520px) {
+    .freesky-drive-mode {
+        --section-title: calc(var(--pc-section-title) * 1);
+    }
+}
