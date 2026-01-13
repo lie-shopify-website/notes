@@ -1,0 +1,973 @@
+
+{% schema %}
+    {
+        "name": "Comparison Product",
+        "settings": [
+            { "type": "header","content":"弹框"},
+            { "type": "textarea", "id": "title", "label": "弹框标题", "default":"Product Compare" },
+
+            { "type": "header","content":"侧边栏"},
+            { "type": "textarea", "id": "side_tab_title", "label": "侧边栏标题", "default":"Bike Comparison" },
+            
+            {
+                "type": "select",
+                "id": "side_tab_position",
+                "options": [
+                {
+                    "value": "left",
+                    "label": "左侧"
+                },
+                {
+                    "value": "right",
+                    "label": "右侧"
+                }
+                ],
+                "default": "left",
+                "label": "侧边栏位置"
+            },
+            
+
+            { "type": "header","content":"其它"},
+            { "type": "text", "id": "custom_class", "label": "自定义class" }
+        ],
+        "blocks": [
+            {
+                "type": "item",
+                "name": "Item",
+                "settings": [
+                    { "type": "paragraph","content":"填写Product Comparison对象中的元字段, 如product_title, color, frame_style"},
+                    { "type": "header","content":"元字段1"},
+                    { "type": "text", "id": "metafields_title1", "label": "元字段名称" },
+                    { "type": "text", "id": "metafields_item1", "label": "元字段KEY" },
+                    { "type": "header","content":"元字段2"},
+                    { "type": "text", "id": "metafields_title2", "label": "元字段名称" },
+                    { "type": "text", "id": "metafields_item2", "label": "元字段KEY" },
+                ]
+            }
+        ],
+
+        "presets": [
+            {
+                "name": "Comparison Product",
+                "category": "custom"
+            }
+        ]
+    }
+{% endschema %}
+
+{% comment %} {% if request.page_type == 'collection' %} {% endcomment %}
+
+{%- assign comparison_metaobjects = metaobjects["product_comparison"].values -%}
+{% if comparison_metaobjects.size > 0 %}
+
+    {% for entity in comparison_metaobjects %}
+      {%- assign first_metaobject = entity -%}
+      {% break %}
+    {% endfor %}
+
+    {{ 'comparison-product.css' | asset_url | stylesheet_tag }}
+    <div class="comparison-product {{ section.settings.custom_class }}" data-section-id="{{ section.id }}" style="display:block;">
+
+        <div class="side-tab js-sideTab hide" data-position="{{ section.settings.side_tab_position }}">
+            <div class="side-tab-inner">
+                <span class="product-number js-productNumber" data-count="0">0</span>
+                <div class="side-tab-content">
+                    <span class="side-tab-icon"></span>
+                    <span class="side-tab-title">{{ section.settings.side_tab_title }}</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="comparison-popup">
+            <div class="popup-layout">
+            <div class="popup-inner">
+                <div class="popup-header">
+                    <div class="pyr-compare-header">
+                        <h2 class="pyr-compare-poptitle">{{ section.settings.title }}</h2>
+                        <div class="py-compare-o2link">
+                            <div class="pyr-cmpremove-link js-compareRemoveAll">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 551.13 551.13">
+                                    <path d="m516.685 68.891h-137.783v-51.668c0-9.52-7.703-17.223-17.223-17.223h-172.228c-9.52 0-17.223 7.703-17.223 17.223v51.668h-137.782v34.446h34.446v413.348c0 19.006 15.457 34.446 34.446 34.446h344.456c18.989 0 34.446-15.44 34.446-34.446v-413.348h34.446v-34.446zm-310.011-34.445h137.783v34.446h-137.783zm241.153 482.239-.034 17.223v-17.223h-344.456v-413.348h344.456v413.348z"></path>
+                                </svg>
+                            Remove All</div>
+                        </div>
+                        <div class="pyr-compare-popclose">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 341.751 341.751">
+                                <rect x="-49.415" y="149.542" transform="matrix(0.7072 -0.707 0.707 0.7072 -70.7868 170.8326)" width="440.528" height="42.667"></rect>
+                                <rect x="149.569" y="-49.388" transform="matrix(0.707 -0.7072 0.7072 0.707 -70.7712 170.919)" width="42.667" height="440.528"></rect>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="popup-table">
+                    <div class="pyr-compare-pager">
+                        <div class="pyr-compare-prev">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 476.213 476.213">
+                                <polygon points="476.213,223.106 57.426,223.106 91.819,188.713 70.606,167.5 0,238.106 70.606,308.713 91.819,287.5   57.426,253.106 476.213,253.106 "></polygon>
+                            </svg>
+                        </div>
+                        <div class="pyr-compare-next">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 476.213 476.213">
+                                <polygon points="405.606,167.5 384.394,188.713 418.787,223.106 0,223.106 0,253.106 418.787,253.106 384.394,287.5   405.606,308.713 476.213,238.106 "></polygon>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="table-inner">
+                        <table class="params-table">
+                            <tbody>
+                                <tr class="compare-img js-compareHeader" data-field-key="product_image">
+                                    <td>
+                                        <label class="coder-comparable-radio">
+                                            <input type="radio" name="comparable-difference" value="all" checked="checked">
+                                            <span>Show All</span>
+                                        </label>
+                                        <label class="coder-comparable-radio">
+                                            <input type="radio" name="comparable-difference" value="difference">
+                                            <span>Show Difference</span>
+                                        </label>
+                                    </td>
+
+                                    {% for entity in comparison_metaobjects %}
+                                        {% assign curr_product = entity['product'].value %}
+                                        {% if curr_product != blank %}
+                                            <td data-product-id="{{ curr_product.id }}" style="display:none;">
+                                                <span class="compare-remove js-compareRemove" data-remove-product-id="{{ curr_product.id }}">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 341.751 341.751">
+                                                        <rect x="-49.415" y="149.542" transform="matrix(0.7072 -0.707 0.707 0.7072 -70.7868 170.8326)" width="440.528" height="42.667"></rect>
+                                                        <rect x="149.569" y="-49.388" transform="matrix(0.707 -0.7072 0.7072 0.707 -70.7712 170.919)" width="42.667" height="440.528"></rect>
+                                                    </svg>
+                                                </span>
+                                                <a href="{{ curr_product.url }}" class="compare-imgbx">
+                                                    <img data-src="{{ curr_product.featured_image | image_url:width:300 }}" width="auto" height="auto" />
+                                                </a>
+                                            </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                                {% for block in section.blocks %}
+                                    {% for i in (1..2) %}
+                                        {% capture metafields_item %}metafields_item{{ i }}{% endcapture %}
+                                        {% capture metafields_title %}metafields_title{{ i }}{% endcapture %}
+                                        {% assign key = block.settings[metafields_item] | strip %}
+                                        {% assign title = block.settings[metafields_title] | strip %}
+
+                                        {% if key != blank and key != 'price' and title != blank and first_metaobject[key].value != blank %}
+                                            <tr data-field-key="{{ key }}" {% if key != 'product_title' %}class="js-difference"{% endif %}>
+                                                <td>{{ title }}</td>
+
+                                                {% for entity in comparison_metaobjects %}
+                                                {% assign curr_product = entity['product'].value %}
+                                                {% if curr_product != blank %}
+                                                    <td data-product-id="{{ curr_product.id }}" style="display:none;"> {{ entity[key].value }} </td>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </tr>
+                                        {% endif %}
+
+                                        {% comment %} 价格 {% endcomment %}
+                                        {% if key == 'price' %}
+                                            <tr data-field-key="{{ key }}">
+                                                <td>{{ title }}</td>
+
+                                                {% for entity in comparison_metaobjects %}
+                                                {% assign curr_product = entity['product'].value %}
+                                                {% if curr_product != blank %}
+                                                    <td data-product-id="{{ curr_product.id }}" style="display:none;"> 
+                                                        <span class="money">{{ curr_product.price | money }}</span>&nbsp;&nbsp;<del>{{ curr_product.compare_at_price | money }}</del>
+                                                        {% liquid
+                                                          assign discount_percentage = 0
+                                                          if curr_product.compare_at_price > curr_product.price
+                                                            assign discount_percentage = curr_product.compare_at_price | minus: curr_product.price | times: 100.0 | divided_by: curr_product.compare_at_price | round: 2
+                                                          endif
+                                                        %}
+                                                        {% if discount_percentage > 0 %}
+                                                            <br>
+                                                            <strong>( {{ discount_percentage }}% Off )</strong>
+                                                        {% endif %}
+                                                    </td>
+                                                {% endif %}
+                                                {% endfor %}
+                                            </tr>
+                                        {% endif %}
+
+                                    {% endfor %}
+                                {% endfor %}
+
+
+                                <tr class="compare-view">
+                                    <td></td>
+
+                                    {% for entity in comparison_metaobjects %}
+                                        {% assign curr_product = entity['product'].value %}
+                                        {% if curr_product != blank %}
+                                            <td data-product-id="{{ curr_product.id }}" style="display:none;">
+                                                <a href="{{ curr_product.url }}" class="btn btn-green compare-view-btn">View Product</a>
+                                            </td>
+                                        {% endif %}
+                                    {% endfor %}
+                                </tr>
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+    ;(function() {
+
+        const oSection = document.querySelector('[data-section-id="{{ section.id }}"]');
+        const allCompareProductIds = [
+            {% for entity in comparison_metaobjects %}
+                {% assign curr_product = entity['product'].value %}
+                {% if curr_product != blank %}
+                    "{{ curr_product.id }}",
+                {% endif %}
+            {% endfor %}
+        ];
+
+        class ComparisonManager {
+            constructor() {
+                this.maxProducts = 4;
+                this.currentMobileIndex = 0;
+                this.mobileActiveProducts = [];
+                this.storageKey = 'compare_selected_products';
+                this.limitProductText = 'You can compare a maximum of 4 products';
+                this.showAllMode = true;
+                this.init();
+            }
+
+            init() {
+                this.restoreSelectedProducts();
+                this.initEvents();
+                this.initMobile();
+
+                // 显示比较勾选框
+                this.showGlobalCompareSelectBtn();
+                this.restoreCheckboxStates();
+            }
+
+            initEvents() {
+                // 事件委托，统一管理所有事件
+                document.addEventListener('click', (event) => {
+                    const target = event.target;
+                    
+                    // 显示比较弹窗
+                    if (target.closest('.js-sideTab')) {
+                        this.showComparisonPopup();
+                        return;
+                    }
+                    
+                    // 隐藏比较弹窗
+                    if (target.closest('.pyr-compare-popclose')) {
+                        this.hideComparisonPopup();
+                        return;
+                    }
+                    
+                    // 移除单个产品
+                    if (target.closest('.js-compareRemove')) {
+                        const productId = target.closest('.js-compareRemove').getAttribute('data-remove-product-id');
+                        this.removeProduct(productId, 'button');
+                        return;
+                    }
+                    
+                    // 移除所有产品
+                    if (target.closest('.js-compareRemoveAll')) {
+                        this.removeAllProducts();
+                        return;
+                    }
+                    
+                    // 分页后重新显示比较按钮
+                    if (target.matches('.paginate .page')) {
+                        setTimeout(() => {
+                            this.showGlobalCompareSelectBtn();
+                            this.restoreCheckboxStates();
+                        }, 5000);
+                        return;
+                    }
+                    
+                    // 手机端翻页
+                    if (target.closest('.pyr-compare-prev')) {
+                        this.mobileSwitchItem('prev');
+                        return;
+                    }
+                    
+                    if (target.closest('.pyr-compare-next')) {
+                        this.mobileSwitchItem('next');
+                        return;
+                    }
+
+                    // Show All / Show Difference 单选按钮点击事件
+                    if (target.closest('.coder-comparable-radio input[type="radio"]')) {
+                        this.handleDifferenceRadioChange(target);
+                        return;
+                    }
+                });
+                
+                // 复选框变化事件
+                document.addEventListener('change', (event) => {
+                    if (event.target.matches('.js-globalCompareSelect input[type="checkbox"]')) {
+                        const checkbox = event.target;
+                        const productId = checkbox.closest('.js-globalCompareSelect').getAttribute('data-compare-product-id');
+                        
+                        if (checkbox.checked) {
+                            this.addProduct(productId);
+                        } else {
+                            this.removeProduct(productId, 'checkbox');
+                        }
+                    }
+                });
+                
+                // 窗口大小变化事件
+                window.addEventListener('resize', () => {
+                    this.handleResize();
+                });
+                
+                // 页面卸载前保存状态
+                window.addEventListener('beforeunload', () => {
+                    this.saveSelectedProducts();
+                });
+                
+                // 监听storage变化，实现跨标签页同步
+                window.addEventListener('storage', (event) => {
+                    if (event.key === this.storageKey) {
+                        this.handleStorageChange(event);
+                    }
+                });
+            }
+
+            // 保存选中的产品到localStorage
+            saveSelectedProducts() {
+                const selectedProducts = this.getSelectedProductIds();
+                try {
+                    localStorage.setItem(this.storageKey, JSON.stringify(selectedProducts));
+                    console.log('已保存选中产品:', selectedProducts);
+                } catch (error) {
+                    console.error('保存到localStorage失败:', error);
+                }
+            }
+
+            // 从localStorage恢复选中的产品
+            restoreSelectedProducts() {
+                try {
+                    const savedProducts = localStorage.getItem(this.storageKey);
+                    if (savedProducts) {
+                        const productIds = JSON.parse(savedProducts);
+                        console.log('从storage恢复产品:', productIds);
+                        
+                        // 过滤出有效且存在于列表中的产品
+                        const validProductIds = productIds.filter(id => 
+                            id && allCompareProductIds.includes(id)
+                        );
+                        
+                        // 激活所有保存的产品
+                        validProductIds.forEach(productId => {
+                            this.activateProduct(productId, false); // false表示不保存到storage
+                        });
+                        
+                        // 恢复复选框状态
+                        this.restoreCheckboxStates();
+                        
+                        // 更新移动端产品列表
+                        this.updateMobileActiveProducts();
+                        
+                        // 更新UI
+                        this.updateProductCount();
+                        
+                        return validProductIds;
+                    }
+                } catch (error) {
+                    console.error('从localStorage恢复失败:', error);
+                    // 清除可能损坏的数据
+                    localStorage.removeItem(this.storageKey);
+                }
+                return [];
+            }
+
+            // 恢复复选框状态
+            restoreCheckboxStates() {
+                const selectedProducts = this.getSelectedProductIds();
+                
+                document.querySelectorAll('.js-globalCompareSelect input[type="checkbox"]').forEach(checkbox => {
+                    const productId = checkbox.closest('.js-globalCompareSelect').getAttribute('data-compare-product-id');
+                    checkbox.checked = selectedProducts.includes(productId);
+                });
+            }
+
+            // 处理storage变化（跨标签页同步）
+            handleStorageChange(event) {
+                if (event.newValue) {
+                    try {
+                        const newProductIds = JSON.parse(event.newValue);
+                        const currentProductIds = this.getSelectedProductIds();
+                        
+                        // 找出新增的产品
+                        const productsToAdd = newProductIds.filter(id => 
+                            !currentProductIds.includes(id)
+                        );
+                        
+                        // 找出需要移除的产品
+                        const productsToRemove = currentProductIds.filter(id => 
+                            !newProductIds.includes(id)
+                        );
+                        
+                        // 应用变化
+                        productsToAdd.forEach(id => this.activateProduct(id, false));
+                        productsToRemove.forEach(id => this.deactivateProduct(id, false));
+                        
+                        // 更新UI
+                        this.updateMobileActiveProducts();
+                        this.updateProductCount();
+                        this.restoreCheckboxStates();
+                        
+                        console.log('从其他标签页同步了选中产品');
+                    } catch (error) {
+                        console.error('处理storage变化失败:', error);
+                    }
+                }
+            }
+
+            // 获取当前选中的产品ID数组
+            getSelectedProductIds() {
+                const activeItems = oSection.querySelectorAll('.popup-table .js-compareHeader td.active');
+                const productIds = [];
+                
+                activeItems.forEach(item => {
+                    const productId = item.getAttribute('data-product-id');
+                    if (productId) {
+                        productIds.push(productId);
+                    }
+                });
+                
+                return productIds;
+            }
+
+            // 获取选中产品数量
+            getSelectedCount() {
+                return this.getSelectedProductIds().length;
+            }
+
+            // 更新侧边栏显示状态
+            updateSideTabVisibility() {
+                const selectedCount = this.getSelectedCount();
+                
+                // 检查是否在弹窗状态
+                const comparisonPopup = oSection.querySelector('.comparison-popup');
+                const isPopupOpen = comparisonPopup && comparisonPopup.classList.contains('open');
+                
+                if (isPopupOpen) {
+                    // 弹窗打开时，侧边栏始终隐藏（已经通过showComparisonPopup处理）
+                    return;
+                }
+                
+                // 弹窗关闭时，根据数量决定显示/隐藏
+                if (selectedCount > 0) {
+                    this.showSideTab();
+                } else {
+                    this.hideSideTab();
+                }
+            }
+
+            // 激活产品（不触发保存）
+            activateProduct(productId, saveToStorage = true) {
+                if (!allCompareProductIds.includes(productId)) {
+                    return false;
+                }
+                
+                const compareProductTds = oSection.querySelectorAll(`.popup-table td[data-product-id="${productId}"]`);
+                compareProductTds.forEach(td => td.classList.add('active'));
+                
+                // 加载产品图片
+                const compareProductImageTds = oSection.querySelectorAll(`.popup-table .compare-img td[data-product-id="${productId}"]`);
+                compareProductImageTds.forEach(td => {
+                    const img = td.querySelector('img');
+                    if (img) img.setAttribute('src', img.getAttribute('data-src'));
+                });
+                
+                if (saveToStorage) {
+                    this.saveSelectedProducts();
+                }
+
+                // 更新差异显示
+                this.updateDifferenceDisplay();
+                
+                return true;
+            }
+
+            // 取消激活产品（不触发保存）
+            deactivateProduct(productId, saveToStorage = true) {
+                const compareProductTds = oSection.querySelectorAll(`.popup-table td[data-product-id="${productId}"]`);
+                compareProductTds.forEach(td => {
+                    td.classList.remove('active');
+                    td.classList.remove('mobile-active');
+                });
+                
+                if (saveToStorage) {
+                    this.saveSelectedProducts();
+                }
+
+                // 更新差异显示
+                this.updateDifferenceDisplay();
+            }
+
+            // 添加产品
+            addProduct(productId) {
+                const selectedProducts = this.getSelectedProductIds();
+                
+                if (selectedProducts.length >= this.maxProducts) {
+                    alert(this.limitProductText);
+                    // 取消勾选
+                    const checkbox = document.querySelector(`.js-globalCompareSelect[data-compare-product-id="${productId}"] input[type="checkbox"]`);
+                    if (checkbox) checkbox.checked = false;
+                    return false;
+                }
+                
+                if (!allCompareProductIds.includes(productId)) {
+                    console.warn(`产品ID ${productId} 不在可比较列表中`);
+                    return false;
+                }
+                
+                if (selectedProducts.includes(productId)) {
+                    console.warn(`产品ID ${productId} 已选中`);
+                    return false;
+                }
+                
+                // 激活产品
+                this.activateProduct(productId);
+                
+                // 更新移动端产品列表和当前显示
+                this.updateMobileActiveProducts();
+                
+                // 更新UI
+                this.updateProductCount();
+                this.updateSideTabVisibility();
+                
+                return true;
+            }
+
+            // 移除产品
+            removeProduct(productId, source = 'button') {
+                // 移除激活状态
+                this.deactivateProduct(productId);
+                
+                // 如果是通过按钮移除，需要同步取消勾选
+                if (source === 'button') {
+                    const checkbox = document.querySelector(`.js-globalCompareSelect[data-compare-product-id="${productId}"] input[type="checkbox"]`);
+                    if (checkbox) checkbox.checked = false;
+                }
+                
+                // 更新移动端产品列表
+                this.updateMobileActiveProducts();
+                
+                // 更新UI
+                this.updateProductCount();
+                
+                // 检查是否还有选中的产品
+                const selectedCount = this.getSelectedCount();
+                
+                // 如果删完了最后一个产品，关闭弹框并更新侧边栏状态
+                if (selectedCount === 0) {
+                    this.hideComparisonPopup();
+                }
+
+                // 更新差异显示
+                this.updateDifferenceDisplay();
+            }
+
+            // 移除所有产品
+            removeAllProducts() {
+                // 移除所有激活状态
+                const activeTds = oSection.querySelectorAll('.popup-table td.active, .popup-table td.mobile-active');
+                activeTds.forEach(td => {
+                    td.classList.remove('active');
+                    td.classList.remove('mobile-active');
+                });
+                
+                // 取消所有复选框的勾选
+                const checkboxes = document.querySelectorAll('.js-globalCompareSelect input[type="checkbox"]:checked');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                });
+                
+                // 重置移动端状态
+                this.mobileActiveProducts = [];
+                this.currentMobileIndex = 0;
+                
+                // 清除storage
+                localStorage.removeItem(this.storageKey);
+                
+                // 更新UI
+                this.updateProductCount();
+                
+                // 关闭弹框（如果有打开的话）
+                this.hideComparisonPopup();
+            }
+
+            // 更新移动端激活产品列表
+            updateMobileActiveProducts() {
+                const allActiveItems = oSection.querySelectorAll('.popup-table .js-compareHeader td.active');
+                
+                // 清空数组并重新填充
+                this.mobileActiveProducts = [];
+                allActiveItems.forEach(item => {
+                    const productId = item.getAttribute('data-product-id');
+                    if (productId) {
+                        this.mobileActiveProducts.push(productId);
+                    }
+                });
+                
+                // 重置当前索引
+                this.currentMobileIndex = 0;
+                
+                // 更新移动端显示
+                this.updateMobileDisplay();
+            }
+
+            // 更新移动端显示
+            updateMobileDisplay() {
+                if (window.innerWidth >= 767) return;
+                
+                // 移除所有移动端激活状态
+                const allMobileActive = oSection.querySelectorAll('.popup-table td.mobile-active');
+                allMobileActive.forEach(td => td.classList.remove('mobile-active'));
+                
+                // 如果有激活的产品，显示第一个
+                if (this.mobileActiveProducts.length > 0 && this.currentMobileIndex < this.mobileActiveProducts.length) {
+                    const currentProductId = this.mobileActiveProducts[this.currentMobileIndex];
+                    const currentTds = oSection.querySelectorAll(`.popup-table td[data-product-id="${currentProductId}"]`);
+                    currentTds.forEach(td => td.classList.add('mobile-active'));
+                }
+                
+                // 更新分页指示器
+                this.updateMobilePager();
+            }
+
+            // 更新移动端分页指示器
+            updateMobilePager() {
+                const pagerText = oSection.querySelector('.pyr-compare-pager-text');
+                if (pagerText && this.mobileActiveProducts.length > 0) {
+                    const current = this.currentMobileIndex + 1;
+                    const total = this.mobileActiveProducts.length;
+                    pagerText.textContent = `${current} / ${total}`;
+                }
+            }
+
+            // 移动端切换产品
+            mobileSwitchItem(direction) {
+                if (window.innerWidth >= 767 || this.mobileActiveProducts.length <= 1) return;
+                
+                // 计算新的索引
+                if (direction === 'prev') {
+                    this.currentMobileIndex = this.currentMobileIndex > 0 
+                        ? this.currentMobileIndex - 1 
+                        : this.mobileActiveProducts.length - 1;
+                } else {
+                    this.currentMobileIndex = this.currentMobileIndex < this.mobileActiveProducts.length - 1 
+                        ? this.currentMobileIndex + 1 
+                        : 0;
+                }
+                
+                // 更新显示
+                this.updateMobileDisplay();
+            }
+
+            // 显示比较弹窗
+            showComparisonPopup() {
+                const sideTab = oSection.querySelector('.js-sideTab');
+                const comparisonPopup = oSection.querySelector('.comparison-popup');
+                
+                if (!sideTab || !comparisonPopup) return;
+                
+                // 检查是否有选中的产品
+                const selectedCount = this.getSelectedCount();
+                if (selectedCount === 0) {
+                    console.log('没有选中的产品，不显示弹窗');
+                    return;
+                }
+                
+                comparisonPopup.classList.add('open');
+                sideTab.classList.add('hide');
+                this.lockBodyScroll(true);
+                
+                // 如果是移动端，确保显示正确的产品
+                if (window.innerWidth < 767) {
+                    this.updateMobileDisplay();
+                }
+            }
+
+            // 隐藏比较弹窗
+            hideComparisonPopup() {
+                const sideTab = oSection.querySelector('.js-sideTab');
+                const comparisonPopup = oSection.querySelector('.comparison-popup');
+                
+                if (!sideTab || !comparisonPopup) return;
+                
+                comparisonPopup.classList.remove('open');
+                this.lockBodyScroll(false);
+                
+                // 关闭弹框后，根据产品数量更新侧边栏显示状态
+                setTimeout(() => {
+                    this.updateSideTabVisibility();
+                }, 10);
+
+                // 恢复show all
+                oSection.querySelector('.coder-comparable-radio input[type="radio"][value="all"]').click();
+            }
+
+            // 显示侧边栏
+            showSideTab() {
+                const sideTab = oSection.querySelector('.js-sideTab');
+                if (sideTab) {
+                    sideTab.classList.remove('hide');
+                }
+            }
+
+            // 隐藏侧边栏
+            hideSideTab() {
+                const sideTab = oSection.querySelector('.js-sideTab');
+                if (sideTab) {
+                    sideTab.classList.add('hide');
+                }
+            }
+
+            // 处理窗口大小变化
+            handleResize() {
+                if (window.innerWidth < 767) {
+                    // 进入移动端模式
+                    this.updateMobileActiveProducts();
+                } else {
+                    // 进入桌面端模式，移除所有mobile-active状态
+                    const allMobileActive = oSection.querySelectorAll('.popup-table td.mobile-active');
+                    allMobileActive.forEach(td => td.classList.remove('mobile-active'));
+                }
+            }
+
+            // 更新产品数量显示
+            updateProductCount() {
+                const activeCount = this.getSelectedCount();
+                const sideTabProductNumber = oSection.querySelector('.js-sideTab .js-productNumber');
+                
+                if (sideTabProductNumber) {
+                    sideTabProductNumber.setAttribute('data-count', activeCount);
+                    sideTabProductNumber.textContent = activeCount;
+                }
+                
+                return activeCount;
+            }
+
+            // 显示全局比较选择按钮
+            showGlobalCompareSelectBtn() {
+                const allGlobalCompareSelects = document.querySelectorAll('.js-globalCompareSelect');
+                console.log('allGlobalCompareSelects: ', allGlobalCompareSelects);
+                if (!allGlobalCompareSelects) return;
+                
+                allGlobalCompareSelects.forEach(item => {
+                    const productId = item.getAttribute('data-compare-product-id');
+                    item.style.display = allCompareProductIds.includes(productId) ? 'block' : 'none';
+                });
+            }
+
+            // 锁定/解锁页面滚动
+            lockBodyScroll(lock = false) {
+                document.body.classList.toggle('lock-body-scroll', lock);
+            }
+
+            // 移动端初始化
+            initMobile() {
+                if (window.innerWidth < 767) {
+                    this.updateMobileActiveProducts();
+                }
+            }
+
+            /*******************************************
+            * Show All / Show Difference 功能实现
+            *******************************************/
+            
+            {% comment %} // 初始化差异显示
+            initDifferenceDisplay() {
+                // 重置所有行的显示状态
+                const allRows = oSection.querySelectorAll('.popup-table tr[data-field-key]');
+                allRows.forEach(tr => {
+                    tr.style.display = '';
+                    tr.classList.remove('highlight-difference');
+                });
+                
+                // 设置单选按钮状态
+                const showAllRadio = oSection.querySelector('input[value="all"]');
+                const showDifferenceRadio = oSection.querySelector('input[value="difference"]');
+                
+                if (showAllRadio && showDifferenceRadio) {
+                    if (this.showAllMode) {
+                        showAllRadio.checked = true;
+                        showDifferenceRadio.checked = false;
+                    } else {
+                        showAllRadio.checked = false;
+                        showDifferenceRadio.checked = true;
+                        this.applyDifferenceMode();
+                    }
+                }
+            } {% endcomment %}
+            
+            // 处理单选按钮变化
+            handleDifferenceRadioChange(target) {
+                const value = target.value;
+                
+                if (value === 'all') {
+                    this.showAllMode = true;
+                    this.showAllRows();
+                } else if (value === 'difference') {
+                    this.showAllMode = false;
+                    this.applyDifferenceMode();
+                }
+            }
+            
+            // 显示所有行
+            showAllRows() {
+                // 显示所有有data-field-key属性的行
+                const allRows = oSection.querySelectorAll('.popup-table tr[data-field-key]');
+                allRows.forEach(tr => {
+                    tr.style.display = '';
+                    tr.classList.remove('highlight-difference');
+                });
+                
+                // 同时显示图片行和查看产品行
+                const compareImgRow = oSection.querySelector('.popup-table .compare-img');
+                const compareViewRow = oSection.querySelector('.popup-table .compare-view');
+                
+                if (compareImgRow) compareImgRow.style.display = '';
+                if (compareViewRow) compareViewRow.style.display = '';
+            }
+            
+            // 应用差异模式（只显示不同行）
+            applyDifferenceMode() {
+                // 获取所有激活的产品ID
+                const activeProductIds = this.getSelectedProductIds();
+                
+                // 如果少于2个激活产品，显示所有行
+                if (activeProductIds.length < 2) {
+                    this.showAllRows();
+                    return;
+                }
+                
+                // 首先显示所有行，然后隐藏相同行
+                this.showAllRows();
+                
+                // 获取所有需要对比的tr（带有js-difference类）
+                const differenceTrs = oSection.querySelectorAll('.popup-table tr.js-difference');
+                
+                // 找出所有相同行并隐藏
+                const sameRows = [];
+                
+                differenceTrs.forEach(tr => {
+                    const tds = tr.querySelectorAll('td[data-product-id]');
+                    const values = [];
+                    
+                    // 收集所有激活产品的值
+                    activeProductIds.forEach(productId => {
+                        const td = Array.from(tds).find(td => td.getAttribute('data-product-id') === productId);
+                        if (td && td.classList.contains('active')) {
+                            const value = td.textContent.trim();
+                            values.push(value);
+                        }
+                    });
+                    
+                    // 检查是否所有值都相同
+                    const allSame = values.length > 1 && this.allValuesEqual(values);
+                    
+                    // 如果所有值都相同，标记为相同行
+                    if (allSame) {
+                        sameRows.push(tr);
+                    } else {
+                        // 如果有差异，添加高亮样式
+                        tr.classList.add('highlight-difference');
+                    }
+                });
+                
+                // 隐藏所有相同行
+                sameRows.forEach(tr => {
+                    tr.style.display = 'none';
+                });
+                
+                // 确保非差异行（如product_title, price等）显示
+                const nonDifferenceTrs = oSection.querySelectorAll('.popup-table tr[data-field-key]:not(.js-difference)');
+                nonDifferenceTrs.forEach(tr => {
+                    tr.style.display = '';
+                });
+                
+                // 确保图片行和查看产品行显示
+                const compareImgRow = oSection.querySelector('.popup-table .compare-img');
+                const compareViewRow = oSection.querySelector('.popup-table .compare-view');
+                
+                if (compareImgRow) compareImgRow.style.display = '';
+                if (compareViewRow) compareViewRow.style.display = '';
+            }
+            
+            // 检查所有值是否相等
+            allValuesEqual(values) {
+                if (values.length === 0) return true;
+                const firstValue = values[0];
+                return values.every(value => value === firstValue);
+            }
+            
+            // 更新差异显示（在添加/移除产品时调用）
+            updateDifferenceDisplay() {
+                if (!this.showAllMode) {
+                    this.applyDifferenceMode();
+                }
+            }
+        }
+
+        // 初始化比较管理器
+        let comparisonManager = null;
+
+        // 监听页面加载完成
+        document.addEventListener('DOMContentLoaded', () => {
+            comparisonManager = new ComparisonManager();
+            
+            // 初始时根据产品数量显示/隐藏侧边栏
+            setTimeout(() => {
+                comparisonManager.updateSideTabVisibility();
+            }, 100);
+        });
+
+        // 可选：添加清理过期数据的逻辑（产品可能在后台被删除）
+        function cleanupExpiredProducts() {
+            try {
+                const saved = localStorage.getItem('compare_selected_products');
+                if (saved) {
+                    const savedIds = JSON.parse(saved);
+                    const validIds = savedIds.filter(id => allCompareProductIds.includes(id));
+                    
+                    if (validIds.length !== savedIds.length) {
+                        localStorage.setItem('compare_selected_products', JSON.stringify(validIds));
+                        console.log('清理了过期产品数据');
+                    }
+                }
+            } catch (error) {
+                console.error('清理过期产品数据失败:', error);
+            }
+        }
+
+        // 页面加载时清理过期数据
+        window.addEventListener('load', cleanupExpiredProducts);
+
+
+
+
+        window.addEventListener('DOMContentLoaded', () => {
+            {% comment %} comparisonManager = new ComparisonManager(); {% endcomment %}
+
+            const currentUrl = window.location.href;
+            if(currentUrl.indexOf('aaa') != -1){
+                document.querySelector('[data-section-id="{{ section.id }}"]').style.display = 'block';
+            }
+        });
+    })();
+    </script>
+
+{% endif %}
+{% comment %} {% endif %} {% endcomment %}
